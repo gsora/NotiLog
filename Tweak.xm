@@ -33,6 +33,9 @@ the generation of a class list and an automatic constructor.
 %end
 */
 
+#define TWEAK_NAME xyz.gsora.notilog
+#define TWEAK_SETTIGNS_PATH /User/Library/Preferences/xyz.gsora.notilog_prefs.plist
+
 @interface BBBulletin
 - (NSString *)description;
 - (NSString *)message;
@@ -50,12 +53,16 @@ the generation of a class list and an automatic constructor.
 %hook BBServer
 
 -(void)publishBulletin:(BBBulletin *)bulletin destinations:(unsigned int)arg2 alwaysToLockScreen:(BOOL)arg3 {
-	HBLogDebug(@" ");
-       	HBLogDebug(@"New notification incoming!");
-	HBLogDebug(@"Message: %@ Setting new message...", [bulletin message]);
-	[bulletin setMessage:@"toplel"];
-	HBLogDebug(@"New message: %@", [bulletin message]);
-	%orig(bulletin, arg2, arg3);
+
+  	NSMutableDictionary *settingsDict = [[NSMutableDictionary alloc] initWithContentsOfFile:@"TWEAK_SETTINGS_PATH"];
+	if([settingsDict[@"Enabled"] boolValue]) {
+       		HBLogDebug(@"New notification incoming!");
+		HBLogDebug(@"Message: %@");
+		%orig(bulletin, arg2, arg3);
+	} else {
+		%orig(bulletin, arg2, arg3);
+	}
 }
 
 %end
+
