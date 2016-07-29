@@ -15,7 +15,7 @@
 		<key>isController</key>
 		<true/>
 		<key>label</key>
-		<string>notilog_prefs</string>
+		<string>NotiLog</string>
 	</dict>
 </dict>
 </plist>
