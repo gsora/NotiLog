@@ -68,7 +68,6 @@ static void notificationCallback(CFNotificationCenterRef center, void *observer,
 %hook BBServer
 
 -(void)publishBulletin:(BBBulletin *)bulletin destinations:(unsigned int)arg2 alwaysToLockScreen:(BOOL)arg3 {
-	HBLogDebug(@"Value of 'enabled': %d", enabled);
 	if(enabled) {
        		HBLogDebug(@"New notification incoming!");
 		HBLogDebug(@"Message: %@", [bulletin message]);
