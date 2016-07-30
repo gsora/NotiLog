@@ -1,37 +1,11 @@
-/* How to Hook with Logos
-Hooks are written with syntax similar to that of an Objective-C @implementation.
-You don't need to #include <substrate.h>, it will be done automatically, as will
-the generation of a class list and an automatic constructor.
-
-%hook ClassName
-
-// Hooking a class method
-+ (id)sharedInstance {
-	return %orig;
-}
-
-// Hooking an instance method with an argument.
-- (void)messageName:(int)argument {
-	%log; // Write a message about this call, including its class, name and arguments, to the system log.
-
-	%orig; // Call through to the original function with its original arguments.
-	%orig(nil); // Call through to the original function with a custom argument.
-
-	// If you use %orig(), you MUST supply all arguments (except for self and _cmd, the automatically generated ones.)
-}
-
-// Hooking an instance method with no arguments.
-- (id)noArguments {
-	%log;
-	id awesome = %orig;
-	[awesome doSomethingElse];
-
-	return awesome;
-}
-
-// Always make sure you clean up after yourself; Not doing so could have grave consequences!
-%end
-*/
+/*
+ * NotiLog
+ *
+ * Written by Gianguido (gsora) Sorà
+ * Twitter: @gsora_
+ *
+ * MIT License.
+ */
 
 #define TWEAK_NAME xyz.gsora.notilog
 #define TWEAK_SETTIGNS_PATH /User/Library/Preferences/xyz.gsora.notilog_prefs.plist
@@ -57,7 +31,7 @@ the generation of a class list and an automatic constructor.
   	NSMutableDictionary *settingsDict = [[NSMutableDictionary alloc] initWithContentsOfFile:@"TWEAK_SETTINGS_PATH"];
 	if([settingsDict[@"Enabled"] boolValue]) {
        		HBLogDebug(@"New notification incoming!");
-		HBLogDebug(@"Message: %@");
+		HBLogDebug(@"Message: %@", [bulletin message]);
 		%orig(bulletin, arg2, arg3);
 	} else {
 		%orig(bulletin, arg2, arg3);
