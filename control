@@ -1,6 +1,6 @@
 Package: xyz.gsora.notilog
 Name: NotiLog
-Depends: mobilesubstrate preferenceloader
+Depends: mobilesubstrate,preferenceloader
 Version: 0.0.1
 Architecture: iphoneos-arm
 Description: Never miss a notification again! NotiLog logs all the notification your device recives.
