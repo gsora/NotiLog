@@ -7,27 +7,12 @@
  * MIT License.
  */
 
+#include <BulletinBoard/BBBulletin.h>
+#include <BulletinBoard/BBServer.h>
+
 static NSString *TWEAK_SETTINGS_PATH = @"/User/Library/Preferences/xyz.gsora.notilog.plist";
 static NSString *LOG_PATH = @"/User/Library/notilog/";
 #define SAVED_STRING (CFStringRef)@"xyz.gsora.notilog.saved"
-
-/*
- * Interfaces to hook in
- */
-@interface BBBulletin
-- (NSString *)description;
-- (NSString *)message;
-- (NSString *)title;
-- (NSString *)subtitle;
-- (id)init;
-+ (instancetype)alloc;
-- (void)setMessage:(NSString *)newMessage;
-@end
-
-@interface BBServer
--(void)publishBulletin:(BBBulletin *)bulletin destinations:(unsigned int)arg2 alwaysToLockScreen:(BOOL)arg3;
-@end
-
 
 /*
  * Whether the tweak should be enabled or not
