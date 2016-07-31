@@ -53,13 +53,24 @@ static void notificationCallback(CFNotificationCenterRef center, void *observer,
  * It loads the preferences by calling loadPrefs(), and sets up a notification observer to update the tweak's preferencese at runtime.
  */
 %ctor {
-    loadPrefs();
-    CFNotificationCenterAddObserver(
-		    CFNotificationCenterGetDarwinNotifyCenter(), 
-		    NULL, 
-		    notificationCallback, 
-		    SAVED_STRING, 
-		    NULL, 
+	// create archive directory, even if it does not exist already
+	NSError *error = nil;
+	[[NSFileManager defaultManager] createDirectoryAtPath:@"/User/Library/notilog/"
+                          withIntermediateDirectories:YES
+                                           attributes:nil
+                                                error:&error];
+
+	if(error != nil) {
+		HBLogError(@"error while creating directory: %@", error);
+	}
+
+	loadPrefs();
+	CFNotificationCenterAddObserver(
+			CFNotificationCenterGetDarwinNotifyCenter(), 
+		    	NULL, 
+		    	notificationCallback, 
+		    	SAVED_STRING, 
+		    	NULL, 
 		    CFNotificationSuspensionBehaviorCoalesce
 	);
 
