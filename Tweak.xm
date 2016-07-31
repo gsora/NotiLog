@@ -8,6 +8,7 @@
  */
 
 static NSString *TWEAK_SETTINGS_PATH = @"/User/Library/Preferences/xyz.gsora.notilog.plist";
+static NSString *LOG_PATH = @"/User/Library/notilog/";
 #define SAVED_STRING (CFStringRef)@"xyz.gsora.notilog.saved"
 
 /*
@@ -55,7 +56,7 @@ static void notificationCallback(CFNotificationCenterRef center, void *observer,
 %ctor {
 	// create archive directory, even if it does not exist already
 	NSError *error = nil;
-	[[NSFileManager defaultManager] createDirectoryAtPath:@"/User/Library/notilog/"
+	[[NSFileManager defaultManager] createDirectoryAtPath:LOG_PATH
                           withIntermediateDirectories:YES
                                            attributes:nil
                                                 error:&error];
