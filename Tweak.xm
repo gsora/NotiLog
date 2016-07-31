@@ -72,7 +72,7 @@ static void notificationCallback(CFNotificationCenterRef center, void *observer,
 		    	notificationCallback, 
 		    	SAVED_STRING, 
 		    	NULL, 
-		    CFNotificationSuspensionBehaviorCoalesce
+		    	CFNotificationSuspensionBehaviorCoalesce
 	);
 
 }
