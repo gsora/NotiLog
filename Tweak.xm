@@ -9,6 +9,7 @@
 
 #include <BulletinBoard/BBBulletin.h>
 #include <BulletinBoard/BBServer.h>
+#import "Notification.h"
 
 static NSString *TWEAK_SETTINGS_PATH = @"/User/Library/Preferences/xyz.gsora.notilog.plist";
 static NSString *LOG_PATH = @"/User/Library/notilog/";
@@ -19,6 +20,10 @@ static NSString *LOG_PATH = @"/User/Library/notilog/";
  */
 static bool enabled;
 
+/*
+ * One and only one file manager.
+ */
+NSFileManager *fileManager;
 
 /*
  * This function load preferences into instance variables.
@@ -39,6 +44,9 @@ static void notificationCallback(CFNotificationCenterRef center, void *observer,
  * It loads the preferences by calling loadPrefs(), and sets up a notification observer to update the tweak's preferencese at runtime.
  */
 %ctor {
+
+	// initialize the file manager
+	fileManager = [NSFileManager defaultManager];
 	// create archive directory, even if it does not exist already
 	NSError *error = nil;
 	[[NSFileManager defaultManager] createDirectoryAtPath:LOG_PATH
@@ -68,6 +76,19 @@ static void notificationCallback(CFNotificationCenterRef center, void *observer,
 	if(enabled) {
        		HBLogDebug(@"New notification incoming!");
 		HBLogDebug(@"Message: %@", [bulletin message]);
+		HBLogDebug(@"Date: %@", [bulletin date]);
+		Notification *n = [[Notification alloc] initWithMessage:[bulletin message] bulletinID:[bulletin bulletinID] title:[bulletin title] subtitle:[bulletin subtitle] section:[bulletin section]];
+		NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:[bulletin date]];
+		if(![fileManager fileExistsAtPath:[NSString stringWithFormat:@"%@/%ld-%ld-%ld.plist", LOG_PATH, (long)[components year], (long)[components month], (long)[components day]]]) {
+			HBLogDebug(@"Log file for today does not exist, creating...");
+			NSMutableArray *a = [[NSMutableArray alloc] init];
+			[a addObject:bulletin];
+			bool success = [a writeToFile:[NSString stringWithFormat:@"%@/%ld-%ld-%ld.plist", LOG_PATH, (long)[components year], (long)[components month], (long)[components day]] atomically:YES];
+			if(!success) {
+				HBLogDebug(@"Cannot serialize array!")
+			}
+		}
+
 		%orig(bulletin, arg2, arg3);
 	} else {
 		%orig(bulletin, arg2, arg3);
