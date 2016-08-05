@@ -1,0 +1,3 @@
+@interface GSRootViewController : UITableViewController
+
+@end
