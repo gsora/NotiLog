@@ -10,6 +10,7 @@
 
 - (id)init;
 - (id)initWithMessage:(NSString *)message bulletinID:(NSString *)bulletinID title:(NSString *)title subtitle:(NSString *)subtitle section:(NSString *)section; 
-
+- (id)initWithCoder:(NSCoder *)aDecoder;
+- (void)encodeWithCoder:(NSCoder *)encoder;
 @end
 
