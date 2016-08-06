@@ -62,12 +62,17 @@ static void notificationCallback(CFNotificationCenterRef center, void *observer,
 
 		// if we have no date, it's not for us
 		if(!([bulletin date] == nil)) {
-			// strange thing needed because NSDate doesn't support simple thing as [object year] (ffs);
+			// strange thing needed because NSDate doesn't support simple thing as [object year] ffs;
 			NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:[bulletin date]];
 
-			// object to serialize
+			// object to save
 			Notification *n = [[Notification alloc] initWithMessage:[bulletin message] bulletinID:[bulletin bulletinID] title:[bulletin title] subtitle:[bulletin subtitle] section:[bulletin section] date:[NSString stringWithFormat:@"%lu-%lu-%lu", (long)[components year], (long)[components month], (long)[components day]]];
+
+			// save it
 			int ret = [[Db sharedInstance] addEntry:n];
+			if(ret != 101) {
+				HBLogError(@"Oh no! Something went wrong with the database! Please, send a copy of /User/Library/notilog.db to gsora AT protonmail DAWT com, tell me this number, too: %d", ret);
+			}
 			HBLogDebug(@"Sqlite3 returned: %d", ret);
 		}
 
