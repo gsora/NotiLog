@@ -3,8 +3,13 @@
 #import <sqlite3.h>
 
 @interface Db : NSObject 
+
 + (Db *)sharedInstance;
 - (id)init;
 - (bool)createDB;
 - (int)addEntry:(Notification *)notification;
+- (NSArray *)getDates;
+
+@property (nonatomic) bool locked;
+
 @end
