@@ -70,6 +70,11 @@ static void notificationCallback(CFNotificationCenterRef center, void *observer,
 
 			// save it
 			int ret = [[Db sharedInstance] addEntry:n];
+			HBLogDebug(@"Dates in the database:");
+			for(NSString *date in [[Db sharedInstance] getDates]) {
+				HBLogDebug(@" - %@", date);
+			}
+			HBLogDebug(@"Print after dates!");
 			if(ret != 101) {
 				HBLogError(@"Oh no! Something went wrong with the database! Please, send a copy of /User/Library/notilog.db to gsora AT protonmail DAWT com, tell me this number, too: %d", ret);
 			}
