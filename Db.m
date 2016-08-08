@@ -10,18 +10,20 @@ static NSString *path = @"/User/Library/notilog.db";
 - (id)init {
 	self = [super init];
 	if(self){}
+	[self setLocked:NO];
 	return self;
 }
 
 + (Db *)sharedInstance{
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[Db alloc] init];
-    });
-    return sharedInstance;	  
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+			sharedInstance = [[Db alloc] init];
+			});
+	return sharedInstance;	  
 }
 
 - (bool)createDB {
+	[self setLocked:YES];
 	bool success = true;
 	NSFileManager *fmanager = [NSFileManager defaultManager];    
 	if(![fmanager fileExistsAtPath:path]) {
@@ -40,10 +42,13 @@ static NSString *path = @"/User/Library/notilog.db";
 		}
 		sqlite3_close(database);
 	}
+	[self setLocked:NO];
 	return success;
 }
 
 - (int)addEntry:(Notification *)notification {
+	while(_locked) {}
+	[self setLocked:YES];
 	const char *dbPath = [path UTF8String];
 	if(sqlite3_open(dbPath, &database) != SQLITE_OK) {
 		NSLog(@"Failed to open database.");
@@ -55,7 +60,35 @@ static NSString *path = @"/User/Library/notilog.db";
 	sqlite3_prepare_v2(database, [query UTF8String],-1, &statement, NULL);
 	int sql_status = sqlite3_step(statement);
 	sqlite3_reset(statement);
+	sqlite3_close(database);
+	[self setLocked:NO];
 	return sql_status;
+}
+
+- (NSArray *)getDates {
+	NSMutableArray *ret = [[NSMutableArray alloc] init];
+	const char *dbPath = [path UTF8String];
+	if(sqlite3_open(dbPath, &database) != SQLITE_OK) {
+		NSLog(@"Failed to create database.");
+		return nil;
+	}
+
+	const char *query = "select distinct date from notilog";
+	if(sqlite3_prepare_v2(database, query,-1, &statement, NULL) == SQLITE_OK) {
+		while(true) {
+			int step_result = sqlite3_step(statement);
+			if(step_result == SQLITE_ROW) {
+				NSString *d = [[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(statement, 0)];
+				[ret addObject:d];
+			} else if(step_result == SQLITE_DONE) {
+				break;
+			}
+		}
+	}
+
+	sqlite3_reset(statement);
+	sqlite3_close(database);
+	return ret;
 }
 
 @end
